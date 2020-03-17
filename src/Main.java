@@ -60,10 +60,37 @@ public class Main {
 
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(test));
+            double licznikSetosa = 0;
+            double poprawnoscSetosa=0;
+            double licznikVersicolor=0;
+            double poprawnoscVersicolor=0;
             String line;
             while ( (line=bufferedReader.readLine())!= null ){
+                String split[] = line.split(",");
+                Kwiat kwiat = new Kwiat(split);
+                double net =0;
+                for (int i =0; i<wektorWag.size();i++){
+                    net+= wektorWag.get(i) * kwiat.atrybuts.get(i);
+                }
+                System.out.println(net+"  "+t+"   "+kwiat.name);
+                if (kwiat.name.equals("Iris-setosa")){
+                    licznikSetosa++;
+                    if (net>t){
+                        poprawnoscSetosa++;
+                    }
+                }else if (kwiat.name.equals("Iris-versicolor")){
+                    licznikVersicolor++;
+                    if (net<t){
+                        poprawnoscVersicolor++;
+                    }
+                }
 
             }
+            System.out.println(licznikVersicolor+"  "+poprawnoscVersicolor);
+            double procentOgolny = 100*(poprawnoscSetosa+poprawnoscVersicolor)/(licznikSetosa+licznikVersicolor);
+            double procentSetosa = (poprawnoscSetosa/licznikSetosa)*100;
+            double procentVersicolor = 100*(poprawnoscVersicolor/licznikVersicolor);
+            System.out.println("Poprawnosc wynosi: "+procentOgolny+"% w czym procent Irys-setos to: "+procentSetosa+" oraz Irys-versicolor: "+procentVersicolor+"%");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

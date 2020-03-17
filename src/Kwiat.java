@@ -3,7 +3,7 @@ import java.util.List;
 
 public class Kwiat {
     public List<Double> atrybuts ;
-    String name;
+    String name = null;
 
     public Kwiat(String[] tabAtr){
         atrybuts = new ArrayList<>();
