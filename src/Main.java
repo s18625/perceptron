@@ -14,8 +14,7 @@ public class Main {
         double t  =  Math.random()*5*Math.pow(-1,(int)(Math.random()*2));
         double alfa;
         Scanner scanner = new Scanner(System.in);
-        System.out.println("podaj stalą uczenia alfa:");
-        alfa = Double.valueOf(scanner.nextLine());
+        alfa = Double.valueOf(args[2]);
         System.out.println("Prog t wynosi: "+t+", a stala uczenia:  "+alfa);
 
         List<Double> wektorWag = new ArrayList<>();
@@ -28,38 +27,45 @@ public class Main {
         ////
 
 
-        try {
-            BufferedReader trainReader = new BufferedReader(new FileReader(train));
-            String line;
-            while ((line=trainReader.readLine())!=null){
-                String string[] = line.split(",");
-                Kwiat kwiat = new Kwiat(string);
-                listKwiatow.add(kwiat);
-                double net = 0;
-                for (int i =0; i<wektorWag.size();i++){
-                    net+= wektorWag.get(i) * kwiat.atrybuts.get(i);
-                }
-                while ( (net<t && kwiat.name.equals("Iris-setosa"))  ||  (net>t && kwiat.name.equals("Iris-versicolor"))){
-                    if (   net<t && kwiat.name.equals("Iris-setosa")  ){
-                        wektorWag = nowyWektorWag(wektorWag,1,0,alfa,kwiat.atrybuts);
-                        t = nowyProg(t,1,0,alfa);
-                    }else if (net>t && kwiat.name.equals("Iris-versicolor") ){
-                        wektorWag = nowyWektorWag(wektorWag,0,1,alfa,kwiat.atrybuts);
-                        t = nowyProg(t,0,1,alfa);
-                    }
+        System.out.println("ile iteracji treningowego ?");
+        int iteracja = Integer.parseInt(scanner.nextLine());
+        for (int k = 0;k< iteracja;k++){
+            try {
+                BufferedReader trainReader = new BufferedReader(new FileReader(train));
+                String line;
+                while ((line=trainReader.readLine())!=null){
+                    String string[] = line.split(",");
+                    Kwiat kwiat = new Kwiat(string);
+                    listKwiatow.add(kwiat);
+                    double net = 0;
                     for (int i =0; i<wektorWag.size();i++){
                         net+= wektorWag.get(i) * kwiat.atrybuts.get(i);
                     }
+                    while ( (net<t && kwiat.name.equals("Iris-setosa"))  ||  (net>t && kwiat.name.equals("Iris-versicolor"))){
+                        if (   net<t && kwiat.name.equals("Iris-setosa")  ){
+                            wektorWag = nowyWektorWag(wektorWag,1,0,alfa,kwiat.atrybuts);
+                            t = nowyProg(t,1,0,alfa);
+                        }else if (net>t && kwiat.name.equals("Iris-versicolor") ){
+                            wektorWag = nowyWektorWag(wektorWag,0,1,alfa,kwiat.atrybuts);
+                            t = nowyProg(t,0,1,alfa);
+                        }
+                        for (int i =0; i<wektorWag.size();i++){
+                            net+= wektorWag.get(i) * kwiat.atrybuts.get(i);
+                        }
+                    }
                 }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+
         }
+
 
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(test));
+            System.out.println("Nowy wektor wag: "+wektorWag);
             double licznikSetosa = 0;
             double poprawnoscSetosa=0;
             double licznikVersicolor=0;
@@ -72,7 +78,7 @@ public class Main {
                 for (int i =0; i<wektorWag.size();i++){
                     net+= wektorWag.get(i) * kwiat.atrybuts.get(i);
                 }
-                System.out.println(net+"  "+t+"   "+kwiat.name);
+                System.out.println("net: "+net+"  "+" wartosc t: "+t+"   "+kwiat.name);
                 if (kwiat.name.equals("Iris-setosa")){
                     licznikSetosa++;
                     if (net>t){
@@ -86,7 +92,6 @@ public class Main {
                 }
 
             }
-            System.out.println(licznikVersicolor+"  "+poprawnoscVersicolor);
             double procentOgolny = 100*(poprawnoscSetosa+poprawnoscVersicolor)/(licznikSetosa+licznikVersicolor);
             double procentSetosa = (poprawnoscSetosa/licznikSetosa)*100;
             double procentVersicolor = 100*(poprawnoscVersicolor/licznikVersicolor);
@@ -97,6 +102,28 @@ public class Main {
             e.printStackTrace();
         }
 
+
+        System.out.println("Chcesz podac wlasny irys? [tak/nie]");
+        String  response = scanner.nextLine();
+        if (response.equals("tak")){
+            String kwiat[] = new String[wektorWag.size()+1];
+            for (int i =0; i<wektorWag.size();i++){
+                System.out.println("Podaj "+(i+1)+" wartosc wektora ["+(i+1)+"/4]");
+                kwiat[i]  = scanner.nextLine();
+            }
+            kwiat[kwiat.length-1] = null; // nie wiadomo jaki irys
+            Kwiat kwiat1 = new Kwiat(kwiat);
+            double net = 0;
+            for (int i =0; i<wektorWag.size();i++){
+                net+= wektorWag.get(i) * kwiat1.atrybuts.get(i);
+            }
+            if (net<t){
+                System.out.println("net: " +net+"a prog t: "+t +", wiec twoj irys najprawdopodobniej nalezy do Iris-versicolor");
+            }else {
+                System.out.println("net: " +net+"a prog t: "+t +", wiec twoj irys najprawdopodobniej nalezy do Iris-setosa");
+            }
+        }
+        scanner.close();
     }
     public static List<Double> nowyWektorWag(List<Double> wektorWag, int oczekiwana,int rzeczywsita, double alfa, List<Double> wektorWejsciowy){
         List<Double> wektorWagPrim  = new ArrayList<>();
@@ -108,7 +135,7 @@ public class Main {
         return wektorWagPrim;
     }
     public static double nowyProg(double staryProg, int oczekiwana,int rzeczywsita, double alfa){
-        double t = staryProg+alfa+(oczekiwana-rzeczywsita)*(-1);
+        double t = staryProg+alfa*(oczekiwana-rzeczywsita)*(-1);
         return t;
     }
 }
