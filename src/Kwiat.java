@@ -8,8 +8,8 @@ public class Kwiat {
     public Kwiat(String[] tabAtr){
         atrybuts = new ArrayList<>();
         for (int i=0;i<tabAtr.length-1;i++) {
-            double date = Double.parseDouble(tabAtr[i]);
-            atrybuts.add(date);
+            double dana = Double.parseDouble(tabAtr[i]);
+            atrybuts.add(dana);
         }
         name = tabAtr[tabAtr.length-1];
     }
