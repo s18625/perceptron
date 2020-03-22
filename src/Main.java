@@ -17,8 +17,21 @@ public class Main {
         alfa = Double.valueOf(args[2]);
         System.out.println("Prog t wynosi: "+t+", a stala uczenia:  "+alfa);
 
+        int ileAtrybutow = 0;
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(train));
+            String line[] = bufferedReader.readLine().split(",");
+            Kwiat kwiat = new Kwiat(line);
+            ileAtrybutow = kwiat.atrybuts.size();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        
         List<Double> wektorWag = new ArrayList<>();
-        for (int i =0; i <4; i++){
+        for (int i =0; i <ileAtrybutow; i++){
             wektorWag.add(Math.random()*5*Math.pow(-1,(int)(Math.random()*2)));
         }
         System.out.println("Wektor wag: "+wektorWag);
@@ -54,6 +67,7 @@ public class Main {
                         }
                     }
                 }
+                trainReader.close();
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -65,7 +79,7 @@ public class Main {
 
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(test));
-            System.out.println("Nowy wektor wag: "+wektorWag);
+            System.out.println("Po zbiorze treningowym - nowy wektor wag: "+wektorWag+" ,a prog t:"+t);
             double licznikSetosa = 0;
             double poprawnoscSetosa=0;
             double licznikVersicolor=0;
